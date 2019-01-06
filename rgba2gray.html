@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Make color image to gray image</title>
+    <style>
+      #imageSrc {
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="loadOpenCV">OpenCV.js is loading...</p>
+    <div>
+      <div>
+        <div>
+          Choose your image <input type="file" id="fileInput" name="file" />
+        </div>
+        <img id="imageSrc" alt="placeholder for your image" width="400" />
+        <div><canvas id="canvasOutput" width="400"></canvas></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      let imgElement = document.getElementById("imageSrc");
+      let inputElement = document.getElementById("fileInput");
+      inputElement.addEventListener(
+        "change",
+        e => {
+          imgElement.src = URL.createObjectURL(e.target.files[0]);
+        },
+        false
+      );
+      
+      imgElement.onload = function() {
+        let imgElement = document.getElementById("imageSrc");
+        let src = cv.imread(imgElement);
+        let dst = new cv.Mat();
+        cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+        cv.imshow("canvasOutput", dst);
+        src.delete();
+        dst.delete();
+      };
+
+      function onOpencvJSLoaded() {
+        document.getElementById("loadOpenCV").innerHTML = "";
+      }
+    </script>
+    <script
+      async
+      src="https://docs.opencv.org/3.4.5/opencv.js"
+      onload="onOpencvJSLoaded();"
+      type="text/javascript"
+    ></script>
+  </body>
+</html>
