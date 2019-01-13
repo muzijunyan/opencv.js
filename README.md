@@ -12,7 +12,7 @@ If you want to speed up the loading process, you'd better to store the opencv.js
 
 ## 2. convert color image to gray image
 
-<img src="lena_gray.png"
+<img src="images/lena_gray.png"
      alt="lena image in gray"
      style="margin-left: 10px;" />
 
@@ -29,6 +29,10 @@ dst.delete();
 ## 3. extract channels
 
 You can extract the R (red), G (green), B (blue) channels from the original color image.
+
+<img src="images/rgb_channels.gif"
+     alt="lena image in R G B channels"
+     style="margin-left: 10px;" />
 
 ```javascript
 let imgElement = document.getElementById("imageSrc");
@@ -51,7 +55,7 @@ R.delete();
 
 ## 4. convert to different color spaces, AND extract channels
 
-You can convert the color image from the original RGB color space to CIEL*a*b\* color space, extract the L channel to get the perceptual lightness of the image.
+You can convert the color image from the original RGB color space to CIE L\*a\*b\* color space, extract the L channel to get the perceptual lightness of the image.
 
 ```javascript
 let imgElement = document.getElementById("imageSrc");
