@@ -80,3 +80,21 @@ labPlanes.delete();
 L.delete();
 dst.delete();
 ```
+
+## 5. smooth image with median filter
+
+The <b>Median Filter</b> is used to remove the noise and make the image smooth.
+
+<img src="images/median_filter.png"
+     alt="median_filter"
+     style="margin-left: 10px;" />
+
+```javascript
+let imgElement = document.getElementById("imageSrc");
+let src = cv.imread(imgElement);
+let dst = new cv.Mat();
+cv.medianBlur(src, dst, 3);
+cv.imshow("canvasOutput", dst);
+src.delete();
+dst.delete();
+```
