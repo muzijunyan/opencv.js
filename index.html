@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>opencv.js tutorials</title>
+    <style>
+      #imageSrc {
+        float: left;
+      }
+    </style>
+    <script src="scripts/imageprocessing.js"></script>
+  </head>
+  <body>
+    <p id="loadOpenCV">OpenCV.js is loading...</p>
+    <div>
+      <div>
+        <div>
+          Choose your image <input type="file" id="fileInput" name="file" />
+        </div>
+        <img id="imageSrc" alt="placeholder for your image" width="400" />
+        <div><canvas id="canvasOutput" width="400"></canvas></div>
+      </div>
+      <p>Select a image processing task:</p>
+      <div>
+        <input type="radio" id="rgba2gray" name="imageprocessing" value="rgba2gray"
+         checked>
+        <label for="huey">rgba to gray</label>
+      </div>
+      <div>
+        <input type="radio" id="extractChannel" name="imageprocessing" value="extractChannel">
+        <label for="dewey">extract red channel</label>
+      </div>
+      <div>
+        <input type="radio" id="medianFilter" name="imageprocessing" value="medianFilter">
+        <label for="louie">smooth image via median filter</label>
+      </div>
+    </div>
+    <script type="text/javascript">
+      let imgElement = document.getElementById("imageSrc");
+      let inputElement = document.getElementById("fileInput");
+      inputElement.addEventListener(
+        "change",
+        e => {
+          imgElement.src = URL.createObjectURL(e.target.files[0]);
+        },
+        false
+      );
+    
+      imgElement.onload = () => {
+        imageProcessor[imageTask()]();
+      }
+
+      let taskElement = document.getElementsByName("imageprocessing");
+      let i;
+      for (i = 0; i < taskElement.length; i++) {
+        taskElement[i].addEventListener(
+          "change",
+          e => {
+            imageProcessor[e.target.value]();
+          },
+          false
+        );
+      }
+    </script>
+    <script
+      async
+      src="https://docs.opencv.org/3.4.5/opencv.js"
+      onload="onOpencvJSLoaded();"
+      type="text/javascript"
+    ></script>
+  </body>
+</html>
