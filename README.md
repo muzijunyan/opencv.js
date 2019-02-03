@@ -93,7 +93,23 @@ The <b>Median Filter</b> is used to remove the noise and make the image smooth.
 let imgElement = document.getElementById("imageSrc");
 let src = cv.imread(imgElement);
 let dst = new cv.Mat();
-cv.medianBlur(src, dst, 3);
+cv.medianBlur(src, dst, 5);
+cv.imshow("canvasOutput", dst);
+src.delete();
+dst.delete();
+```
+
+## 6. smooth image with box filter
+
+The <b>Box Filter</b> is to replace the central element of the kernal area with the average of all the pixels under this area, so the image will get blurred.
+
+```javascript
+let imgElement = document.getElementById("imageSrc");
+let src = cv.imread(imgElement);
+let dst = new cv.Mat();
+let ksize = new cv.Size(5, 5);
+let anchor = new cv.Point(-1, -1); // Point (-1, -1) means that anchor is at the kernel center
+cv.boxFilter(src, dst, -1, ksize, anchor, true, cv.BORDER_DEFAULT); // -1 to use src.depth()
 cv.imshow("canvasOutput", dst);
 src.delete();
 dst.delete();

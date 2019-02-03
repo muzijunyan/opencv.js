@@ -38,6 +38,21 @@ let imageProcessor = {
         cv.imshow("canvasOutput", dst);
         src.delete();
         dst.delete();
+    },
+
+    boxFilter: (boxFilter = true, normalized = true) => {
+        let src = imageProcessor.imageSource();
+        let dst = new cv.Mat();
+        let ksize = new cv.Size(3, 3);
+        let anchor = new cv.Point(-1, -1); // Point (-1, -1) means that anchor is at the kernel center
+        if (boxFilter === true) {
+            cv.boxFilter(src, dst, -1, ksize, anchor, normalized, cv.BORDER_DEFAULT); // -1 to use src.depth()
+        } else {
+            cv.blur(src, dst, ksize, anchor, cv.BORDER_DEFAULT);
+        }
+        cv.imshow("canvasOutput", dst);
+        src.delete();
+        dst.delete(); 
     }
 }
 
