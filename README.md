@@ -10,7 +10,9 @@ Using opencv.js to process images in the web applications
 
 If you want to speed up the loading process, you'd better to store the opencv.js library in your local repository.
 
-## 2. convert color image to gray image
+## 2. basic color image conversion
+
+### a. convert color image to gray image
 
 <img src="images/lena_gray.png"
      alt="lena image in gray"
@@ -26,7 +28,7 @@ src.delete();
 dst.delete();
 ```
 
-## 3. extract channels
+### b. extract RGB channels
 
 You can extract the R (red), G (green), B (blue) channels from the original color image.
 
@@ -53,7 +55,7 @@ rgbaPlanes.delete();
 R.delete();
 ```
 
-## 4. convert to different color spaces, AND extract channels
+### c. convert to different color spaces, AND extract channels
 
 You can convert the color image from the original RGB color space to CIE L\*a\*b\* color space, extract the L channel to get the perceptual lightness of the image.
 
@@ -81,7 +83,9 @@ L.delete();
 dst.delete();
 ```
 
-## 5. smooth image with median filter
+## 3. smooth image 
+
+### a. via median filter
 
 The <b>Median Filter</b> is used to remove the noise and make the image smooth.
 
@@ -99,7 +103,7 @@ src.delete();
 dst.delete();
 ```
 
-## 6. smooth image with box filter
+### b. via box filter
 
 The <b>Box Filter</b> is to replace the central element of the kernal area with the average of all the pixels under this area, so the image will get blurred.
 
@@ -114,3 +118,9 @@ cv.imshow("canvasOutput", dst);
 src.delete();
 dst.delete();
 ```
+
+## 4. edge detection with sobel operation
+
+<img src="images/sobel_operation.png"
+     alt="lena image in gray"
+     style="margin-left: 10px;" />

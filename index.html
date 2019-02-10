@@ -21,24 +21,10 @@
         <img id="imageSrc" alt="placeholder for your image" width="400" />
         <div><canvas id="canvasOutput" width="400"></canvas></div>
       </div>
+    </div>
+    <div>
       <p>Select a image processing task:</p>
-      <div>
-        <input type="radio" id="rgba2gray" name="imageprocessing" value="rgba2gray"
-         checked>
-        <label for="rgba2gray">rgba to gray</label>
-      </div>
-      <div>
-        <input type="radio" id="extractChannel" name="imageprocessing" value="extractChannel">
-        <label for="extractChannel">extract red channel</label>
-      </div>
-      <div>
-        <input type="radio" id="medianFilter" name="imageprocessing" value="medianFilter">
-        <label for="medianFilter">smooth image via median filter</label>
-      </div>
-      <div>
-        <input type="radio" id="boxFilter" name="imageprocessing" value="boxFilter">
-        <label for="boxFilter">smooth image via box filter</label>
-      </div>
+      <div id="radioGroupImageProcessing"></div>
     </div>
     <script type="text/javascript">
       let imgElement = document.getElementById("imageSrc");
@@ -50,22 +36,12 @@
         },
         false
       );
-    
+
+      setImageTasks();
+
       imgElement.onload = () => {
         imageProcessor[imageTask()]();
-      }
-
-      let taskElement = document.getElementsByName("imageprocessing");
-      let i;
-      for (i = 0; i < taskElement.length; i++) {
-        taskElement[i].addEventListener(
-          "change",
-          e => {
-            imageProcessor[e.target.value]();
-          },
-          false
-        );
-      }
+      };
     </script>
     <script
       async
