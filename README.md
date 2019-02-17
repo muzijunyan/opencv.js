@@ -122,5 +122,55 @@ dst.delete();
 ## 4. edge detection with sobel operation
 
 <img src="images/sobel_operation.png"
-     alt="lena image in gray"
+     alt="sobel operation"
      style="margin-left: 10px;" />
+
+Sobel operation is to used to find the changes (discontinuities) of the pixel values in e.g. a grayscale image, so to detect the edges. 
+
+### a. preparations and convert the color image to a gray one
+
+```javascript
+let imgElement = document.getElementById("imageSrc");
+let src = cv.imread(imgElement);
+let dstx = new cv.Mat(); // represents the horizontal changes
+let dsty = new cv.Mat(); // represents the vertical changes
+let dst = new cv.Mat(); // merges above 2 changes
+// convert to gray image
+cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
+```
+
+### b. using the following filter to get the horizontal changes in the image
+
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&0&&plus;1\\-2&0&&plus;2\\-1&0&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&0&+1\\-2&0&+2\\-1&0&+1\end{bmatrix}" />
+
+```javascript
+// sobel operation on the x-axis
+cv.Sobel(src, dstx, cv.CV_16S, 1, 0, 3, 1, 0, cv.BORDER_DEFAULT);
+// take the absolute values and convert them back to cv.CV_8U
+cv.convertScaleAbs(dstx, dstx, 1, 0); 
+```
+
+### c. using the following filter to get the vertical changes in the image
+
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&-2&-1\\0&0&0\\&plus;1&&plus;2&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&-2&-1\\0&0&0\\+1&+2&+1\end{bmatrix}" />
+
+```javascript
+// sobel operation on the y-axis
+cv.Sobel(src, dsty, cv.CV_16S, 0, 1, 3, 1, 0, cv.BORDER_DEFAULT);
+cv.convertScaleAbs(dsty, dsty, 1, 0);
+```
+
+### d. merging the horizontal and vertical changes and showing the results
+
+```javascript
+// merge the images
+cv.addWeighted(dstx, 0.5, dsty, 0.5, 0, dst);
+// show the result and release objects
+cv.imshow("canvasOutput", dst);
+src.delete(); dstx.delete(); dsty.delete(); dst.delete();
+```
+
+This image series is showing the steps, from a) converting to gray image, b) getting horizontal changes in the gray image, c) getting vertical changes, and d) the final merged images:
+<img src="images/sobel_steps.png"
+     alt="sobel steps"
+     style="margin-left: 10px;" width="1551" height="317"/>
