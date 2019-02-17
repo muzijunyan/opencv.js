@@ -125,7 +125,7 @@ dst.delete();
      alt="sobel operation"
      style="margin-left: 10px;" />
 
-Sobel operation is to used to find the changes (discontinuities) of the pixel values in e.g. a grayscale image, so to detect the edges. 
+Sobel operation is used to find the changes (discontinuities) of the pixel values in e.g. a grayscale image, so to detect the edges. 
 
 ### a. preparations and convert the color image to a gray one
 
@@ -139,9 +139,7 @@ let dst = new cv.Mat(); // merges above 2 changes
 cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
 ```
 
-### b. using the following filter to get the horizontal changes in the image
-
-<img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&0&&plus;1\\-2&0&&plus;2\\-1&0&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&0&+1\\-2&0&+2\\-1&0&+1\end{bmatrix}" />
+### b. using the filter <img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&0&&plus;1\\-2&0&&plus;2\\-1&0&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&0&+1\\-2&0&+2\\-1&0&+1\end{bmatrix}" /> to get the horizontal changes in the image
 
 ```javascript
 // sobel operation on the x-axis
@@ -150,9 +148,7 @@ cv.Sobel(src, dstx, cv.CV_16S, 1, 0, 3, 1, 0, cv.BORDER_DEFAULT);
 cv.convertScaleAbs(dstx, dstx, 1, 0); 
 ```
 
-### c. using the following filter to get the vertical changes in the image
-
-<img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&-2&-1\\0&0&0\\&plus;1&&plus;2&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&-2&-1\\0&0&0\\+1&+2&+1\end{bmatrix}" />
+### c. using the filter <img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&-2&-1\\0&0&0\\&plus;1&&plus;2&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&-2&-1\\0&0&0\\+1&+2&+1\end{bmatrix}" /> to get the vertical changes in the image
 
 ```javascript
 // sobel operation on the y-axis
@@ -160,7 +156,7 @@ cv.Sobel(src, dsty, cv.CV_16S, 0, 1, 3, 1, 0, cv.BORDER_DEFAULT);
 cv.convertScaleAbs(dsty, dsty, 1, 0);
 ```
 
-### d. merging the horizontal and vertical changes and showing the results
+### d. merging the horizontal and vertical changes and showing the final results
 
 ```javascript
 // merge the images
@@ -171,6 +167,5 @@ src.delete(); dstx.delete(); dsty.delete(); dst.delete();
 ```
 
 This image series is showing the steps, from a) converting to gray image, b) getting horizontal changes in the gray image, c) getting vertical changes, and d) the final merged images:
-<img src="images/sobel_steps.png"
-     alt="sobel steps"
-     style="margin-left: 10px;" width="1551" height="317"/>
+
+![Sobel Steps](images/sobel_steps.png)
