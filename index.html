@@ -23,7 +23,7 @@
       </div>
     </div>
     <div>
-      <p>Select a image processing task:</p>
+      <p>Select an image processing task:</p>
       <div id="radioGroupImageProcessing"></div>
     </div>
     <script type="text/javascript">
@@ -40,7 +40,14 @@
       setImageTasks();
 
       imgElement.onload = () => {
-        imageProcessor[imageTask()]();
+        let taskName = imageTask();
+        let select = "select[name='" + taskName + "Select']";
+        let options = document.querySelector(select);
+        if (options) {
+          imageProcessor[taskName](options.selectedIndex);
+        } else {
+          imageProcessor[taskName]();
+        }
       };
     </script>
     <script
