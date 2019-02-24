@@ -1,3 +1,33 @@
+let imageProcessingRadios = [
+  {
+    id: "rgba2gray",
+    desc: "rgba to gray",
+    checked: true
+  },
+  {
+    id: "extractChannel",
+    desc: "extract channel: ",
+    select: ["red", "green", "blue"],
+    selectHandler: channelChangeEventHandler
+  },
+  {
+    id: "extractLightness",
+    desc: "extract lightness channel"
+  },
+  {
+    id: "medianFilter",
+    desc: "smooth image via median filter"
+  },
+  {
+    id: "boxFilter",
+    desc: "smooth image via box filter"
+  },
+  {
+    id: "sobel",
+    desc: "edge detection via sobel filter"
+  }
+];
+
 let imageProcessor = {
   imageSource: () => {
     let imgElement = document.getElementById("imageSrc");
@@ -29,6 +59,29 @@ let imageProcessor = {
     src.delete();
     rgbaPlanes.delete();
     R.delete();
+  },
+
+  extractLightness: () => {
+    let src = imageProcessor.imageSource();
+    let dst = new cv.Mat();
+
+    // convert the color image into the Lab space
+    cv.cvtColor(src, src, cv.COLOR_RGBA2RGB);
+    cv.cvtColor(src, dst, cv.COLOR_RGB2Lab);
+
+    // extract the Lightness channel
+    let labPlanes = new cv.MatVector();
+    // split the Mat
+    cv.split(dst, labPlanes);
+    // get L channel
+    let L = labPlanes.get(0);
+    cv.imshow("canvasOutput", L);
+
+    // release objects
+    src.delete();
+    labPlanes.delete();
+    L.delete();
+    dst.delete();
   },
 
   medianFilter: () => {
@@ -63,13 +116,19 @@ let imageProcessor = {
     // convert to gray image
     cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
     // sobel operation on the x-axis
-    cv.Sobel(src, dstx, cv.CV_16S, 1, 0, 3, 1, 0, cv.BORDER_DEFAULT);
-    cv.convertScaleAbs(dstx, dstx, 1, 0); // take its absolute value and then convert back to cv.CV_8U
+    cv.Sobel(src, dstx, cv.CV_32F, 1, 0, 3, 1, 0, cv.BORDER_DEFAULT);
     // sobel operation on the y-axis
-    cv.Sobel(src, dsty, cv.CV_16S, 0, 1, 3, 1, 0, cv.BORDER_DEFAULT);
-    cv.convertScaleAbs(dsty, dsty, 1, 0);
+    cv.Sobel(src, dsty, cv.CV_32F, 0, 1, 3, 1, 0, cv.BORDER_DEFAULT);
+
+    // cv.convertScaleAbs(dstx, dstx, 1, 0); // take its absolute value and then convert back to cv.CV_8U
+    // cv.convertScaleAbs(dsty, dsty, 1, 0);
     // merge the images
-    cv.addWeighted(dstx, 0.5, dsty, 0.5, 0, dst);
+    // cv.addWeighted(dstx, 0.5, dsty, 0.5, 0, dst);
+
+    // calculate the magnitude of the 2 images
+    cv.magnitude(dstx, dsty, dst);
+    // set back to cv.CV_8U space
+    cv.convertScaleAbs(dst, dst, 1, 0);
     // show the result and release objects
     cv.imshow("canvasOutput", dst);
     src.delete();
@@ -96,7 +155,22 @@ function onOpencvJSLoaded() {
   document.getElementById("loadOpenCV").innerHTML = "";
 }
 
-function div_radioOption(id, name, text, chekced = false) {
+function channelChangeEventHandler(event) {
+  // You can use “this” to refer to the selected element.
+  let taskName = event.target.parentElement.getAttribute("for");
+  if (imageTask() === taskName) {
+    imageProcessor[taskName](event.target.selectedIndex);
+  }
+}
+
+function div_radioOption(
+  id,
+  name,
+  text,
+  chekced = false,
+  select = [],
+  handler
+) {
   let div = document.createElement("div");
   let input = document.createElement("input");
   input.setAttribute("type", "radio");
@@ -110,6 +184,24 @@ function div_radioOption(id, name, text, chekced = false) {
   label.setAttribute("for", id);
   let labelContent = document.createTextNode(" " + text);
   label.appendChild(labelContent);
+
+  if (select.length > 0) {
+    let selectElement = document.createElement("select");
+    let selectID = id + "Select";
+    selectElement.setAttribute("id", selectID);
+    selectElement.setAttribute("name", selectID);
+
+    select.forEach(option => {
+      let optionElement = document.createElement("option");
+      optionElement.setAttribute("value", option);
+      let optionContent = document.createTextNode(" " + option);
+      optionElement.appendChild(optionContent);
+      selectElement.appendChild(optionElement);
+    });
+    selectElement.onchange = handler;
+    label.appendChild(selectElement);
+  }
+
   div.appendChild(input);
   div.appendChild(label);
   return div;
@@ -117,44 +209,41 @@ function div_radioOption(id, name, text, chekced = false) {
 
 function setImageTasks() {
   let radioGroupElement = document.getElementById("radioGroupImageProcessing");
-  let imageProcessingRadios = [
-    {
-      id: "rgba2gray",
-      desc: "rgba to gray",
-      checked: true
-    },
-    {
-      id: "extractChannel",
-      desc: "extract red channel"
-    },
-    {
-      id: "medianFilter",
-      desc: "smooth image via median filter"
-    },
-    {
-      id: "boxFilter",
-      desc: "smooth image via box filter"
-    },
-    {
-      id: "sobel",
-      desc: "edge detection via sobel filter"
-    }
-  ];
+
   imageProcessingRadios.forEach(radio => {
     radioGroupElement.appendChild(
-      div_radioOption(radio.id, "imageprocessing", radio.desc, radio.checked)
+      div_radioOption(
+        radio.id,
+        "imageprocessing",
+        radio.desc,
+        radio.checked,
+        radio.select,
+        radio.selectHandler
+      )
     );
   });
 
-  let taskElement = document.getElementsByName("imageprocessing");
-  let i;
-  for (i = 0; i < taskElement.length; i++) {
-    taskElement[i].addEventListener(
+  let taskElements = document.getElementsByName("imageprocessing");
+  taskElements.forEach(taskElement => {
+    taskElement.addEventListener(
       "change",
       e => {
-        imageProcessor[e.target.value]();
+        let options = imageProcessingRadios.filter(radio => {
+          return (
+            e.target.value === radio.id &&
+            radio.select &&
+            radio.select.length > 0
+          );
+        });
+        if (options.length === 0) {
+          imageProcessor[e.target.value]();
+        } else {
+          let select = "select[name='" + e.target.value + "Select']";
+          let optionID = document.querySelector(select).selectedIndex;
+          imageProcessor[e.target.value](optionID);
+        }
       },
       false
     );
-  }
+  });
 }
