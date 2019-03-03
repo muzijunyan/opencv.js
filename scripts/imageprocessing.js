@@ -8,7 +8,7 @@ let imageProcessingRadios = [
     id: "extractChannel",
     desc: "extract channel: ",
     select: ["red", "green", "blue"],
-    selectHandler: channelChangeEventHandler
+    handler: channelChangeEventHandler
   },
   {
     id: "extractLightness",
@@ -25,6 +25,12 @@ let imageProcessingRadios = [
   {
     id: "sobel",
     desc: "edge detection via sobel filter"
+  },
+  {
+    id: "canny",
+    desc: "canny edge detection with lower threshold 50 -> 100 ",
+    lowThreshold: [50, 100],
+    handler: thresholdChangeEventHandler
   }
 ];
 
@@ -135,6 +141,20 @@ let imageProcessor = {
     dstx.delete();
     dsty.delete();
     dst.delete();
+  },
+
+  canny: (lowThreshold = 50) => {
+    let src = imageProcessor.imageSource();
+    let dstx = new cv.Mat();
+    let dsty = new cv.Mat();
+    let dst = new cv.Mat();
+    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
+    cv.Canny(src, dst, parseFloat(lowThreshold), parseFloat(lowThreshold) * 2, 3, false);
+    cv.imshow("canvasOutput", dst);
+    src.delete();
+    dstx.delete();
+    dsty.delete();
+    dst.delete();
   }
 };
 
@@ -163,12 +183,20 @@ function channelChangeEventHandler(event) {
   }
 }
 
+function thresholdChangeEventHandler(event) {
+  let taskName = event.target.parentElement.getAttribute("for");
+  if (imageTask() === taskName) {
+    imageProcessor[taskName](event.target.value);
+  }
+}
+
 function div_radioOption(
   id,
   name,
   text,
   chekced = false,
   select = [],
+  threshold = [],
   handler
 ) {
   let div = document.createElement("div");
@@ -202,6 +230,18 @@ function div_radioOption(
     label.appendChild(selectElement);
   }
 
+  if (threshold.length === 2) {
+    let rangeInputElement = document.createElement("input");
+    rangeInputElement.setAttribute("type", "range");
+    rangeInputElement.setAttribute("id", id + "Range");
+    rangeInputElement.setAttribute("value", "" + threshold[0]);
+    rangeInputElement.setAttribute("min", "" + threshold[0]);  
+    rangeInputElement.setAttribute("max", "" + threshold[1]);  
+    rangeInputElement.setAttribute("step", "1");  
+    rangeInputElement.oninput = handler; 
+    label.appendChild(rangeInputElement);
+  } 
+
   div.appendChild(input);
   div.appendChild(label);
   return div;
@@ -218,7 +258,8 @@ function setImageTasks() {
         radio.desc,
         radio.checked,
         radio.select,
-        radio.selectHandler
+        radio.lowThreshold,
+        radio.handler
       )
     );
   });
@@ -235,13 +276,24 @@ function setImageTasks() {
             radio.select.length > 0
           );
         });
-        if (options.length === 0) {
-          imageProcessor[e.target.value]();
-        } else {
+        let range = imageProcessingRadios.filter(radio => {
+          return (
+            e.target.value === radio.id &&
+            radio.lowThreshold &&
+            radio.lowThreshold.length === 2
+          );
+        });
+        if (options.length > 0) {
           let select = "select[name='" + e.target.value + "Select']";
           let optionID = document.querySelector(select).selectedIndex;
           imageProcessor[e.target.value](optionID);
-        }
+        } else if (range.length > 0) {
+          let id = e.target.value + "Range";
+          let rangeInput = document.getElementById(id);
+          imageProcessor[e.target.value](rangeInput.value);
+        } else {
+          imageProcessor[e.target.value]();
+        } 
       },
       false
     );

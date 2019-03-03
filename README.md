@@ -1,6 +1,6 @@
 # opencv.js
 
-Using opencv.js to process images in the web applications
+Using opencv.js to process images in the web applications.
 
 ## 1. load opencv.js file
 
@@ -18,6 +18,12 @@ If you want to speed up the loading process, you'd better to store the opencv.js
      alt="lena image in gray"
      style="margin-left: 10px;" />
 
+#####  <i>Lena's image can be found in [opencv sample data](https://github.com/opencv/opencv/tree/master/samples/data)</i>.
+
+The grayed image is converted from the color image, based on its RGB channel values with the formula: <b>0.299⋅R+0.587⋅G+0.114⋅B</b>. 
+
+GREEN gets more weight, since our human eyes are more sensitive to GREEN than to RED or BLUE. 
+
 ```javascript
 let imgElement = document.getElementById("imageSrc");
 let src = cv.imread(imgElement);
@@ -30,7 +36,7 @@ dst.delete();
 
 ### b. extract RGB channels
 
-You can extract the R (red), G (green), B (blue) channels from the original color image.
+You can extract the R (red), G (green), B (blue) channels individually from the original color image.
 
 <img src="images/rgb_channels.gif"
      alt="lena image in R G B channels"
@@ -57,7 +63,7 @@ R.delete();
 
 ### c. convert to different color spaces, AND extract channels
 
-You can convert the color image from the original RGB color space to CIE L\*a\*b\* color space, extract the L channel to get the perceptual lightness of the image.
+To get perceived lightness of a color image, you can convert the color image from the original RGB color space to CIE L\*a\*b\* color space, and extract the L (lightness) channel.
 
 ```javascript
 let imgElement = document.getElementById("imageSrc");
@@ -119,67 +125,16 @@ src.delete();
 dst.delete();
 ```
 
-## 4. edge detection with sobel operation
+## 4. edge detection 
+
+### a. sobel operation
+
+Sobel operation is used to find the changes (discontinuities, gradient) in the pixel values of e.g. a grayscale image, so to detect the edges. 
 
 <img src="images/sobel_operation.png"
      alt="sobel operation"
      style="margin-left: 10px;" />
 
-Sobel operation is used to find the changes (discontinuities, gradient) of the pixel values in e.g. a grayscale image, so to detect the edges. 
+More details in [EdgeDetection.md](EdgeDetection.md)
 
-### a. preparations and convert the color image to a gray one
-
-```javascript
-let imgElement = document.getElementById("imageSrc");
-let src = cv.imread(imgElement);
-let dstx = new cv.Mat(); // represents the horizontal changes
-let dsty = new cv.Mat(); // represents the vertical changes
-let dst = new cv.Mat(); // merges above 2 changes
-// convert to gray image
-cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
-```
-
-### b. using the filter <img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&0&&plus;1\\-2&0&&plus;2\\-1&0&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&0&+1\\-2&0&+2\\-1&0&+1\end{bmatrix}" /> to get the horizontal changes in the image
-
-```javascript
-// sobel operation on the x-axis
-cv.Sobel(src, dstx, cv.CV_16S, 1, 0, 3, 1, 0, cv.BORDER_DEFAULT);
-```
-
-### c. using the filter <img src="https://latex.codecogs.com/gif.latex?\inline&space;\begin{bmatrix}-1&-2&-1\\0&0&0\\&plus;1&&plus;2&&plus;1\end{bmatrix}" title="\begin{bmatrix}-1&-2&-1\\0&0&0\\+1&+2&+1\end{bmatrix}" /> to get the vertical changes in the image
-
-```javascript
-// sobel operation on the y-axis
-cv.Sobel(src, dsty, cv.CV_16S, 0, 1, 3, 1, 0, cv.BORDER_DEFAULT);
-```
-
-### d. merge the horizontal and vertical changes (gradient) and show the final results
-
-```javascript
-// take the absolute values and convert them back to cv.CV_8U
-cv.convertScaleAbs(dstx, dstx, 1, 0); 
-cv.convertScaleAbs(dsty, dsty, 1, 0);
-// merge the images
-cv.addWeighted(dstx, 0.5, dsty, 0.5, 0, dst);
-// show the result and release objects
-cv.imshow("canvasOutput", dst);
-src.delete(); dstx.delete(); dsty.delete(); dst.delete();
-```
-
-This image series is showing the steps, from a) converting to gray image, b) getting horizontal changes in the gray image, c) getting vertical changes, and d) the final merged images:
-
-![Sobel Steps](images/sobel_steps.png)
-
-### d'. calculate gradient magnitude
-
-Instead of calculating the average of the horizontal and vertical changes, as in the step d, replace it with calculating their magnitude to get more precise results.
-
-```javascript
-// calculate the magnitude of the 2 images
-cv.magnitude(dstx, dsty, dst);
-// set back to cv.CV_8U space
-cv.convertScaleAbs(dst, dst, 1, 0);
-// show the result and release objects
-cv.imshow("canvasOutput", dst);
-src.delete(); dstx.delete(); dsty.delete(); dst.delete();
-```
+### b. canny edge detection

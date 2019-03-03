@@ -46,7 +46,13 @@
         if (options) {
           imageProcessor[taskName](options.selectedIndex);
         } else {
-          imageProcessor[taskName]();
+          let id = taskName + "Range";
+          let rangeInput = document.getElementById(id);
+          if (rangeInput) {
+            imageProcessor[taskName](rangeInput.value);
+          } else {
+            imageProcessor[taskName]();
+          }
         }
       };
     </script>
