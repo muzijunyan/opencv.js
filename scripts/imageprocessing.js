@@ -28,7 +28,7 @@ let imageProcessingRadios = [
   },
   {
     id: "canny",
-    desc: "canny edge detection with lower threshold 50 -> 100 ",
+    desc: "canny edge detection with lower threshold: ",
     lowThreshold: [50, 100],
     handler: thresholdChangeEventHandler
   }
@@ -188,6 +188,7 @@ function thresholdChangeEventHandler(event) {
   if (imageTask() === taskName) {
     imageProcessor[taskName](event.target.value);
   }
+  document.getElementById(taskName + "SpanRangeValue").innerHTML = " " + event.target.value;
 }
 
 function div_radioOption(
@@ -210,6 +211,7 @@ function div_radioOption(
   }
   let label = document.createElement("label");
   label.setAttribute("for", id);
+  label.setAttribute("id", "label_" + id);
   let labelContent = document.createTextNode(" " + text);
   label.appendChild(labelContent);
 
@@ -240,6 +242,11 @@ function div_radioOption(
     rangeInputElement.setAttribute("step", "1");  
     rangeInputElement.oninput = handler; 
     label.appendChild(rangeInputElement);
+    let spanRangeValue = document.createElement("span");
+    spanRangeValue.setAttribute("id", id + "SpanRangeValue")
+    let labelRangeValue = document.createTextNode(" " + threshold[0]);
+    spanRangeValue.appendChild(labelRangeValue)
+    label.appendChild(spanRangeValue);
   } 
 
   div.appendChild(input);

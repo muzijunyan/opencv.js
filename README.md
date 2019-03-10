@@ -138,3 +138,10 @@ Sobel operation is used to find the changes (discontinuities, gradient) in the p
 More details in [EdgeDetection.md](EdgeDetection.md)
 
 ### b. canny edge detection
+
+Based on sobel operation, Canny edge detection uses further techniques to remove noises and extract the strong edges from  the weak ones:
+
+<img src="images/canny_operation.png"
+     alt="canny operation"
+     style="margin-left: 10px;" />
+

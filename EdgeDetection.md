@@ -67,4 +67,20 @@ cv.imshow("canvasOutput", dst);
 src.delete(); dstx.delete(); dsty.delete(); dst.delete();
 ```
 
-### b. canny edge detection
+## 2. Canny Operation
+
+After **finding the gradient** of the image, e.g. based on sobel operation, **Canny** edge detection uses further techniques to remove noises and extract the strong edges from  the weak ones:
+
+<img src="images/canny_operation.png"
+     alt="canny operation"
+     style="margin-left: 10px;" />
+
+The further techniques include:
+* **noise reduction** with gaussian filter, which can be applied before sobel operation;
+* **non-maximum suppression** - the weaker gradients in the same direction will be suppressed, only the strongest one persists;
+* **hysteresis thresholding** - 2 threshold values are applied: 
+   * the lower one is to block further weaker gradients, the higher one is to persist the stronger ones which are considered as edges; 
+   * the gradients in-between can only survive if they are connected to the strong edges which have survived the higher threshold value.
+
+
+
