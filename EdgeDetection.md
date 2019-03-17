@@ -82,5 +82,15 @@ The further techniques include:
    * the lower one is to block further weaker gradients, the higher one is to persist the stronger ones which are considered as edges; 
    * the gradients in-between can only survive if they are connected to the strong edges which have survived the higher threshold value.
 
+The opencv library provides the canny operation as one-line function:
 
+```javascript
+let imgElement = document.getElementById("imageSrc");
+let src = cv.imread(imgElement);
+let dst = new cv.Mat();
+cv.Canny(src, dst, 80, 160, 3, false);
+cv.imshow("canvasOutput", dst);
+src.delete();
+dst.delete();
+```
 

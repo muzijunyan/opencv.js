@@ -144,4 +144,3 @@ Based on sobel operation, Canny edge detection uses further techniques to remove
 <img src="images/canny_operation.png"
      alt="canny operation"
      style="margin-left: 10px;" />
-

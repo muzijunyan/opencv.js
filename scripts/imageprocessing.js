@@ -145,15 +145,10 @@ let imageProcessor = {
 
   canny: (lowThreshold = 50) => {
     let src = imageProcessor.imageSource();
-    let dstx = new cv.Mat();
-    let dsty = new cv.Mat();
     let dst = new cv.Mat();
-    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY, 0);
-    cv.Canny(src, dst, parseFloat(lowThreshold), parseFloat(lowThreshold) * 2, 3, false);
+    cv.Canny(src, dst, parseFloat(lowThreshold), parseFloat(lowThreshold) * 3, 3, false);
     cv.imshow("canvasOutput", dst);
     src.delete();
-    dstx.delete();
-    dsty.delete();
     dst.delete();
   }
 };
