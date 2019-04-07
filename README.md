@@ -144,3 +144,11 @@ Based on sobel operation, Canny edge detection uses further techniques to remove
 <img src="images/canny_operation.png"
      alt="canny operation"
      style="margin-left: 10px;" />
+
+### c. hough line detection
+
+Based on canny edge detetion, using Hough transformation the lines can be inspected:
+
+<img src="images/houghLinesP.png"
+     alt="hough line detection"
+     style="margin-left: 10px;" />

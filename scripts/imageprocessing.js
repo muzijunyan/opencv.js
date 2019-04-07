@@ -31,6 +31,12 @@ let imageProcessingRadios = [
     desc: "canny edge detection with lower threshold: ",
     lowThreshold: [50, 100],
     handler: thresholdChangeEventHandler
+  },
+  {
+    id: "houghLinesP",
+    desc: "houghLinesP - detect lines with lower threshold: ",
+    lowThreshold: [50, 100],
+    handler: thresholdChangeEventHandler
   }
 ];
 
@@ -150,6 +156,26 @@ let imageProcessor = {
     cv.imshow("canvasOutput", dst);
     src.delete();
     dst.delete();
+  },
+
+  houghLinesP: (lowThreshold = 50) => {
+    let src = imageProcessor.imageSource();
+    let canny = new cv.Mat();
+    let dst = cv.Mat.zeros(src.rows, src.cols, cv.CV_8UC3);
+    let lines = new cv.Mat();
+    let color = new cv.Scalar(10, 200, 200);
+
+    cv.Canny(src, canny, parseFloat(lowThreshold), parseFloat(lowThreshold) * 3, 3, false);
+    // You can try more different parameters
+    cv.HoughLinesP(canny, lines, 1, Math.PI / 180, 2, 0, 0);
+    // draw lines
+    for (let i = 0; i < lines.rows; ++i) {
+        let startPoint = new cv.Point(lines.data32S[i * 4], lines.data32S[i * 4 + 1]);
+        let endPoint = new cv.Point(lines.data32S[i * 4 + 2], lines.data32S[i * 4 + 3]);
+        cv.line(dst, startPoint, endPoint, color);
+    }
+    cv.imshow('canvasOutput', dst);
+    src.delete(); canny.delete(); dst.delete(); lines.delete();
   }
 };
 
