@@ -37,6 +37,12 @@ let imageProcessingRadios = [
     desc: "houghLinesP - detect lines with lower threshold: ",
     lowThreshold: [50, 100],
     handler: thresholdChangeEventHandler
+  },
+  {
+    id: "houghCircle",
+    desc: "houghCircle - detect circles",
+    lowThreshold: [50, 100],
+    handler: thresholdChangeEventHandler
   }
 ];
 
@@ -166,7 +172,6 @@ let imageProcessor = {
     let color = new cv.Scalar(10, 200, 200);
 
     cv.Canny(src, canny, parseFloat(lowThreshold), parseFloat(lowThreshold) * 3, 3, false);
-    // You can try more different parameters
     cv.HoughLinesP(canny, lines, 1, Math.PI / 180, 2, 0, 0);
     // draw lines
     for (let i = 0; i < lines.rows; ++i) {
@@ -176,6 +181,29 @@ let imageProcessor = {
     }
     cv.imshow('canvasOutput', dst);
     src.delete(); canny.delete(); dst.delete(); lines.delete();
+  },
+
+  houghCircle: (lowThreshold = 50) => {
+    let src = imageProcessor.imageSource();
+    let dst = cv.Mat.zeros(src.rows, src.cols, cv.CV_8U);
+    let circles = new cv.Mat();
+    let color = new cv.Scalar(255, 0, 0);
+    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
+    let ksize = new cv.Size(3, 3);
+    // You can try more different parameters
+    cv.GaussianBlur(src, src, ksize, 0, 0, cv.BORDER_DEFAULT);
+    cv.HoughCircles(src, circles, cv.HOUGH_GRADIENT,
+      1, 45, parseFloat(lowThreshold) * 2, 40, 0, 0); // param1: canny higher threshold
+    // draw circles
+    for (let i = 0; i < circles.cols; ++i) {
+      let x = circles.data32F[i * 3];
+      let y = circles.data32F[i * 3 + 1];
+      let radius = circles.data32F[i * 3 + 2];
+      let center = new cv.Point(x, y);
+      cv.circle(dst, center, radius, color);
+    }
+    cv.imshow('canvasOutput', dst);
+    src.delete(); dst.delete(); circles.delete();
   }
 };
 
